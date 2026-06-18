@@ -1,0 +1,57 @@
+{
+    "name": "digitaledinge/contao-grid-ratio-widget",
+    "description": "Grid ratio widget for Contao Open Source CMS",
+    "keywords": ["contao", "widget", "grid"],
+    "type": "contao-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cristian Gavriliu",
+            "homepage": "https://github.com/cristiangavriliu",
+            "role": "Developer"
+        },
+        {
+            "name": "Digitale Dinge GmbH",
+            "homepage": "https://digitaledin.ge",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/Digitale-Dinge/contao-grid-ratio-widget/issues",
+        "source": "https://github.com/Digitale-Dinge/contao-grid-ratio-widget",
+        "forum": "https://community.contao.org"
+    },
+    "require": {
+        "php": "^8.2",
+        "contao/core-bundle": "^5.3",
+        "symfony/asset": "^6.4 || ^7.4",
+        "symfony/http-kernel": "^6.4 || ^7.4",
+        "symfony/dependency-injection": "^6.4 || ^7.4",
+        "symfony/event-dispatcher": "^6.4 || ^7.4"
+    },
+    "require-dev": {
+        "contao/manager-plugin": "^2.0",
+        "shipmonk/composer-dependency-analyser": "^1.8"
+    },
+    "conflict": {
+        "contao/manager-plugin": "<2.0 || >=3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DigitaleDinge\\GridRatioWidgetBundle\\": "src/"
+        }
+    },
+    "scripts": {
+        "depcheck": "@php vendor/bin/composer-dependency-analyser --config=depcheck.php"
+    },
+    "extra": {
+        "contao-manager-plugin": "DigitaleDinge\\GridRatioWidgetBundle\\ContaoManager\\Plugin"
+    },
+    "config": {
+        "allow-plugins": {
+            "contao-components/installer": false,
+            "contao/manager-plugin": false,
+            "php-http/discovery": false
+        }
+    }
+}

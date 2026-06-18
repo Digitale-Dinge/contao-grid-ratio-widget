@@ -1,0 +1,13 @@
+{#{% trans_default_domain 'contao_default' %}#}
+
+<div class="grid-ratio">
+    {% set input_attributes = attrs()
+        .set('type', 'hidden')
+        .set('name', name)
+        .set('id', id)
+        .set('value', value)
+        .mergeWith(attributes)
+    %}
+    <input{{ input_attributes }}>
+    <div class="grid-ratio__bar" aria-hidden="true"></div>
+</div>

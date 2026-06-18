@@ -1,0 +1,77 @@
+:root {
+    --grid-ratio-height: 30px;
+    --grid-ratio-bar: #f1f3f4;
+    --grid-ratio-seg: #fce3cc;
+    --grid-ratio-accent: var(--contao);
+    --grid-ratio-label-color: #7a3e00;
+    --grid-ratio-handle-shadow: rgba(255, 255, 255, .65);
+    --grid-ratio-handle-bg: rgba(255, 255, 255, .85);
+}
+
+html[data-color-scheme=dark] {
+    --grid-ratio-bar: #292c32;
+    --grid-ratio-seg: #4a3320;
+    --grid-ratio-label-color: #f4d9bf;
+    --grid-ratio-handle-shadow: rgba(0, 0, 0, .45);
+    --grid-ratio-handle-bg: rgba(0, 0, 0, .7);
+}
+
+.grid-ratio-widget {
+    margin-top: 4px;
+}
+
+.grid-ratio__bar {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    height: var(--grid-ratio-height);
+    border-radius: var(--border-radius, 3px);
+    background: var(--grid-ratio-bar);
+    border: 1px solid var(--form-border, #d0d0d2);
+    overflow: hidden;
+    user-select: none;
+    touch-action: none;
+}
+
+.grid-ratio__seg {
+    flex-grow: 1;
+    flex-basis: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    background: var(--grid-ratio-seg);
+}
+
+.grid-ratio__label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--grid-ratio-label-color);
+    pointer-events: none;
+}
+
+.grid-ratio__handle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 100%;
+    cursor: ew-resize;
+    background: var(--grid-ratio-accent);
+    border-radius: 3px;
+    box-shadow: 0 0 0 2px var(--grid-ratio-handle-shadow);
+    z-index: 1;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 2px;
+        height: 14px;
+        transform: translate(-50%, -50%);
+        background: var(--grid-ratio-handle-bg);
+        border-radius: 2px;
+    }
+}
