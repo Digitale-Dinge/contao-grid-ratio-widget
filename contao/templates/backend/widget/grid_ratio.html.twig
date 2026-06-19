@@ -1,5 +1,3 @@
-{#{% trans_default_domain 'contao_default' %}#}
-
 <div class="grid-ratio">
     {% set input_attributes = attrs()
         .set('type', 'hidden')
@@ -9,5 +7,24 @@
         .mergeWith(attributes)
     %}
     <input{{ input_attributes }}>
+
+    {# Column count derived from the stored fr list ("4fr 8fr" -> 2); clamped 2–4. #}
+    {% set ratio_count = value|trim ? value|trim|split(' ')|length : 2 %}
+    {% set ratio_count = max(2, min(4, ratio_count)) %}
+
+    {% set columns_word = 'tl_content.gridRatioColumns'|trans({}, 'contao_tl_content') %}
+    <div class="grid-ratio__controls">
+        <h3><label class="grid-ratio__count-label" for="{{ id }}_count">{{ columns_word }}</label></h3>
+        {# Same markup Contao uses for select fields, so the choices.js controller
+           styles it identically to the classic "Columns" dropdown. #}
+        <div class="tl_select_wrapper" data-controller="contao--choices">
+            <select class="tl_select grid-ratio__count" id="{{ id }}_count">
+                {% for n in 2..4 %}
+                    <option value="{{ n }}"{{ n == ratio_count ? ' selected' : '' }}>{{ n }} {{ columns_word }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
     <div class="grid-ratio__bar" aria-hidden="true"></div>
 </div>

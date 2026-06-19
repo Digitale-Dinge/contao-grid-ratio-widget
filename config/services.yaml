@@ -1,9 +1,8 @@
 services:
     _defaults:
+        autowire: true
         autoconfigure: true
 
-    digitale_dinge_company.listener.add_assets:
-        class: DigitaleDinge\GridRatioWidgetBundle\EventListener\BackendAssetsListener
-        arguments:
-            - '@contao.routing.scope_matcher'
-            - '@assets.packages'
+    DigitaleDinge\GridRatioWidgetBundle\:
+        resource: '../src/'
+        exclude: '../src/{DigitaleDingeGridRatioWidgetBundle.php,ContaoManager,Widget}'

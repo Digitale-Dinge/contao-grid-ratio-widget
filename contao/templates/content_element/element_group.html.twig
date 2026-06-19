@@ -1,0 +1,17 @@
+{% extends '@Contao/content_element/_base.html.twig' %}
+
+{#
+    Wraps the nested elements in a grid that follows the stored ratio.
+    Only fills the "content" block, so it composes cleanly: standalone it is the
+    grid itself; inside a host (e.g. KISS) it sits within the host's list wrapper.
+#}
+{% block content %}
+    {% set grid_cols = grid_ratio_cols(data.gridRatio|default) %}
+    {% if data.gridRatioActive|default and grid_cols %}
+        <div class="grid-ratio" style="--grid-cols: {{ grid_cols }}">
+            {% for fragment in nested_fragments %}{{ content_element(fragment) }}{% endfor %}
+        </div>
+    {% else %}
+        {% for fragment in nested_fragments %}{{ content_element(fragment) }}{% endfor %}
+    {% endif %}
+{% endblock %}

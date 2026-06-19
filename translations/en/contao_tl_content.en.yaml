@@ -1,0 +1,8 @@
+tl_content:
+    gridRatioActive:
+        - Advanced column set
+        - Enables a custom column ratio for this group.
+    gridRatio:
+        - Column ratio
+        - Set the number of columns and their width ratio (as fr values).
+    gridRatioColumns: Columns

@@ -2,7 +2,7 @@
     --grid-ratio-height: 30px;
     --grid-ratio-bar: #f1f3f4;
     --grid-ratio-seg: #fce3cc;
-    --grid-ratio-accent: var(--contao);
+    --grid-ratio-accent: var(--contao, #f47c00);
     --grid-ratio-label-color: #7a3e00;
     --grid-ratio-handle-shadow: rgba(255, 255, 255, .65);
     --grid-ratio-handle-bg: rgba(255, 255, 255, .85);
@@ -16,8 +16,17 @@ html[data-color-scheme=dark] {
     --grid-ratio-handle-bg: rgba(0, 0, 0, .7);
 }
 
-.grid-ratio-widget {
+.grid-ratio {
     margin-top: 4px;
+}
+
+.grid-ratio__controls {
+    margin-bottom: 8px;
+}
+
+/* choices.js renders inside .tl_select_wrapper; keep it compact, not full width */
+.grid-ratio__controls .tl_select_wrapper {
+    max-width: 220px;
 }
 
 .grid-ratio__bar {

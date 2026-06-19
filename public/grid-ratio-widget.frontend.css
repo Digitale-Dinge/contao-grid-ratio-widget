@@ -1,0 +1,16 @@
+/**
+ * Frontend grid for the {{ --grid-cols }} produced by the grid ratio widget.
+ * Tailwind-independent, plain CSS. Mobile stacks to one column; the ratio
+ * applies from the "md" breakpoint upwards.
+ */
+.grid-ratio {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--grid-ratio-gap, 1rem);
+}
+
+@media (width >= 768px) {
+    .grid-ratio {
+        grid-template-columns: var(--grid-cols, 1fr);
+    }
+}

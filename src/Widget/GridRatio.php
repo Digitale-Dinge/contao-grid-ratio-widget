@@ -33,7 +33,7 @@ class GridRatio extends Widget
             'id' => $this->strId,
             'class' => $this->strClass,
             'name' => $this->strName,
-            'value' => $this->varValue,
+            'value' => (string) $this->varValue,
             'attributes' => $this->getAttributes(),
         ]);
     }

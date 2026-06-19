@@ -1,260 +1,202 @@
 /**
- * Column-ratio ruler for element groups.
+ * Grid ratio widget — column proportions on a 12-unit base.
+ *
+ * Stores a ready-to-use fr list (e.g. "4fr 8fr") in a hidden input. A number
+ * stepper sets the column count (2–4); a drag ruler sets the proportions and
+ * snaps to twelfths (so 2/3/4 columns can be split evenly and in exact
+ * thirds/quarters). The ruler shows rounded percentages; the stored value is fr.
+ *
  */
-// ToDo: Rewrite - 12 column grid, no need to listen to any other fields
-(function () {
-    'use strict';
+{
+    const TOTAL = 12; // 12-unit base
+    const MIN = 2;
+    const MAX = 4;
 
-    var STEPS = 10; // 100% in 10% units
+    /** Parse "4fr 8fr" -> [4, 8] (or null if it is not a valid fr list). */
+    const parseUnits = (value) => {
+        const parts = String(value || '')
+            .trim()
+            .split(/\s+/)
+            .map((part) => parseInt(part, 10))
+            .filter((n) => Number.isInteger(n) && n >= 1);
 
-    // The gridColumns <select> stores the Column enum case NAMES (one..twelve),
-    // not "cols_N". Map them to the actual column count.
-    var WORDS = {
-        one: 1, two: 2, three: 3, four: 4, five: 5, six: 6,
-        seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12
+        return parts.length >= MIN && parts.length <= MAX ? parts : null;
     };
 
-    function initRatio(container) {
-        if (container.dataset.ratioReady) {
+    /** Even split on the 12-base, e.g. 2 -> [6,6], 3 -> [4,4,4], 4 -> [3,3,3,3]. */
+    const evenUnits = (n) => {
+        const base = Math.floor(TOTAL / n);
+        const units = Array.from({ length: n }, () => base);
+        for (let rest = TOTAL - base * n, i = 0; rest > 0; i++, rest--) {
+            units[i] += 1;
+        }
+        return units;
+    };
+
+    const initWidget = (container) => {
+        if (container.dataset.ready) {
             return;
         }
-        container.dataset.ratioReady = '1';
+        container.dataset.ready = '1';
 
-        var input = container.querySelector('input[type="hidden"]');
-        var bar = container.querySelector('.grid-ratio__bar');
-        var colsField = 'ctrl_gridColumns';
-        var fieldName = colsField.replace(/^ctrl_/, '');
-
-        // Resolve the gridColumns <select> robustly: by control id, by field name
-        // (virtual fields keep their plain name) or, as a last resort, by the
-        // closest select whose options use the "cols_N" value scheme.
-        function findSelect() {
-            var byOption = document.querySelector('select option[value^="cols_"]');
-            return document.getElementById(colsField)
-                || document.querySelector('select[name="' + fieldName + '"]')
-                || document.querySelector('select[id$="' + fieldName + '"]')
-                || (byOption ? byOption.closest('select') : null);
+        const input = container.querySelector('input[type="hidden"]');
+        const bar = container.querySelector('.grid-ratio__bar');
+        const counter = container.querySelector('.grid-ratio__count');
+        if (!input || !bar) {
+            return;
         }
 
-        var select = findSelect();
+        let units = parseUnits(input.value) ?? evenUnits(MIN);
+        let segments = [];
+        let labels = [];
+        let handles = [];
 
-        // State for the current column count.
-        var state = { n: 0, pristine: true, positions: [], segs: [], handles: [], labels: [] };
+        const writeValue = () => {
+            input.value = units.map((u) => `${u}fr`).join(' ');
+        };
 
-        function colCount() {
-            if (!select) {
-                select = findSelect();
-            }
-            if (!select) {
-                return 0;
-            }
-            var val = (select.value || '').trim();
-            if (!val) {
-                return 0;
-            }
-            if (WORDS[val]) {
-                return WORDS[val];
-            }
-            // Fallback: "cols_2"/"2" style values, then the option position
-            // (blank option sits at index 0, so index === column count).
-            var m = /(\d+)/.exec(val);
-            if (m) {
-                return parseInt(m[1], 10);
-            }
-            return select.selectedIndex > 0 ? select.selectedIndex : 0;
-        }
-
-        function parseUnits(n) {
-            var raw = (input.value || '').trim();
-            if (!raw) {
-                return null;
-            }
-            var parts = raw.split('-').map(function (x) { return parseInt(x, 10); });
-            if (parts.length !== n) {
-                return null;
-            }
-            var sum = 0;
-            var ok = true;
-            parts.forEach(function (p) {
-                if (!(p >= 1)) { ok = false; }
-                sum += p;
-            });
-            return (ok && sum === STEPS) ? parts : null;
-        }
-
-        function positionsToUnits(positions) {
-            var units = [];
-            var prev = 0;
-            positions.forEach(function (p) {
-                units.push(p - prev);
-                prev = p;
-            });
-            units.push(STEPS - prev);
-            return units;
-        }
-
-        function unitsToPositions(units) {
-            var positions = [];
-            var acc = 0;
-            for (var i = 0; i < units.length - 1; i++) {
+        /** Cumulative unit boundaries between segments (length = units.length - 1). */
+        const boundaries = () => {
+            const result = [];
+            let acc = 0;
+            for (let i = 0; i < units.length - 1; i++) {
                 acc += units[i];
-                positions.push(acc);
+                result.push(acc);
             }
-            return positions;
-        }
+            return result;
+        };
 
-        // Even split rounded onto the 10% grid (used when the editor first drags).
-        function evenPositions(n) {
-            var positions = [];
-            for (var i = 1; i < n; i++) {
-                positions.push(Math.round((i * STEPS) / n));
-            }
-            return positions;
-        }
+        const paint = () => {
+            const bounds = boundaries();
+            units.forEach((u, i) => {
+                segments[i].style.flexGrow = String(u);
+                labels[i].textContent = `${Math.round((u / TOTAL) * 100)}%`;
+            });
+            handles.forEach((handle, i) => {
+                handle.style.left = `${(bounds[i] / TOTAL) * 100}%`;
+            });
+        };
 
-        function writeValue() {
-            input.value = positionsToUnits(state.positions).join('-');
-        }
-
-        // Fractions (0..1) per segment for the current state.
-        function fractions() {
-            if (state.pristine) {
-                var even = [];
-                for (var i = 0; i < state.n; i++) {
-                    even.push(1 / state.n);
-                }
-                return even;
-            }
-            return positionsToUnits(state.positions).map(function (u) { return u / STEPS; });
-        }
-
-        function paint() {
-            var fracs = fractions();
-            var cum = 0;
-            for (var i = 0; i < fracs.length; i++) {
-                state.segs[i].style.flexGrow = String(fracs[i]);
-                state.labels[i].textContent = Math.round(fracs[i] * 100) + '%';
-                if (i < state.handles.length) {
-                    cum += fracs[i];
-                    state.handles[i].style.left = (cum * 100) + '%';
-                }
-            }
-        }
-
-        function startDrag(handle, handleIndex) {
-            // Promote an even/pristine ruler to a concrete grid ratio on first drag.
-            if (state.pristine) {
-                state.positions = evenPositions(state.n);
-                state.pristine = false;
-                writeValue();
+        const startDrag = (event, index) => {
+            event.preventDefault();
+            const handle = handles[index];
+            try {
+                handle.setPointerCapture(event.pointerId);
+            } catch {
+                /* not supported – dragging still works */
             }
 
-            function onMove(e) {
-                var rect = bar.getBoundingClientRect();
+            const onMove = (moveEvent) => {
+                const rect = bar.getBoundingClientRect();
                 if (!rect.width) {
                     return;
                 }
-                var frac = (e.clientX - rect.left) / rect.width;
-                var u = Math.round(frac * STEPS);
+                const bounds = boundaries();
+                const lower = index === 0 ? 1 : bounds[index - 1] + 1;
+                const upper = index === bounds.length - 1 ? TOTAL - 1 : bounds[index + 1] - 1;
 
-                var positions = state.positions;
-                var lower = handleIndex === 0 ? 1 : positions[handleIndex - 1] + 1;
-                var upper = handleIndex === positions.length - 1 ? STEPS - 1 : positions[handleIndex + 1] - 1;
-                // Keep room (>=1 unit) for every segment on either side.
-                lower = Math.max(lower, handleIndex + 1);
-                upper = Math.min(upper, STEPS - (positions.length - handleIndex));
+                let pos = Math.round(((moveEvent.clientX - rect.left) / rect.width) * TOTAL);
+                pos = Math.min(Math.max(pos, lower), upper);
+                bounds[index] = pos;
 
-                positions[handleIndex] = Math.max(lower, Math.min(upper, u));
+                const next = [];
+                let prev = 0;
+                bounds.forEach((bound) => {
+                    next.push(bound - prev);
+                    prev = bound;
+                });
+                next.push(TOTAL - prev);
+                units = next;
+
                 writeValue();
                 paint();
-            }
+            };
 
-            // Listeners live on the handle (not document): with pointer capture they
-            // still fire while dragging outside it, and they are torn down with the
-            // element on a Turbo navigation -> no lingering document-level handlers.
-            function onEnd() {
+            const onEnd = () => {
                 handle.removeEventListener('pointermove', onMove);
                 handle.removeEventListener('pointerup', onEnd);
                 handle.removeEventListener('pointercancel', onEnd);
-            }
+            };
 
             handle.addEventListener('pointermove', onMove);
             handle.addEventListener('pointerup', onEnd);
             handle.addEventListener('pointercancel', onEnd);
-        }
+        };
 
-        function build() {
-            var n = colCount();
-            state.n = n;
-            state.segs = [];
-            state.handles = [];
-            state.labels = [];
-            bar.innerHTML = '';
+        const build = () => {
+            segments = [];
+            labels = [];
+            handles = [];
+            bar.replaceChildren();
 
-            var units = parseUnits(n);
-            if (units) {
-                state.pristine = false;
-                state.positions = unitsToPositions(units);
-            } else {
-                state.pristine = true;
-                state.positions = [];
+            if (counter) {
+                counter.value = String(units.length);
             }
 
-            // Segments (with a % label inside each).
-            for (var i = 0; i < n; i++) {
-                var seg = document.createElement('div');
-                seg.className = 'grid-ratio__seg';
-                var label = document.createElement('span');
+            units.forEach(() => {
+                const segment = document.createElement('div');
+                segment.className = 'grid-ratio__seg';
+                const label = document.createElement('span');
                 label.className = 'grid-ratio__label';
-                seg.appendChild(label);
-                bar.appendChild(seg);
-                state.segs.push(seg);
-                state.labels.push(label);
-            }
+                segment.append(label);
+                bar.append(segment);
+                segments.push(segment);
+                labels.push(label);
+            });
 
-            // Handles (n - 1).
-            for (var h = 0; h < n - 1; h++) {
-                (function (index) {
-                    var handle = document.createElement('div');
-                    handle.className = 'grid-ratio__handle';
-                    handle.addEventListener('pointerdown', function (e) {
-                        e.preventDefault();
-                        if (handle.setPointerCapture) {
-                            try { handle.setPointerCapture(e.pointerId); } catch (err) { /* noop */ }
-                        }
-                        startDrag(handle, index);
-                    });
-                    bar.appendChild(handle);
-                    state.handles.push(handle);
-                })(h);
+            for (let i = 0; i < units.length - 1; i++) {
+                const handle = document.createElement('div');
+                handle.className = 'grid-ratio__handle';
+                const index = i;
+                handle.addEventListener('pointerdown', (event) => startDrag(event, index));
+                bar.append(handle);
+                handles.push(handle);
             }
 
             paint();
-        }
+        };
 
-        var changeBound = false;
-        function bindChange() {
-            if (!changeBound && select) {
-                select.addEventListener('change', build);
-                changeBound = true;
+        const setCount = (n) => {
+            const clamped = Math.min(MAX, Math.max(MIN, n));
+            units = evenUnits(clamped);
+            writeValue();
+            build();
+        };
+
+        // Delegate the change so it works regardless of choices.js init order
+        // (the change event bubbles up to the container).
+        container.addEventListener('change', (event) => {
+            if (event.target?.classList.contains('grid-ratio__count')) {
+                const n = parseInt(event.target.value, 10);
+                if (Number.isInteger(n)) {
+                    setCount(n);
+                }
             }
-        }
+        });
 
-        bindChange();
         build();
-        // Re-resolve once more after the backend has fully wired up (e.g. chosen).
-        bindChange();
-    }
 
-    function initAll() {
-        document.querySelectorAll('.grid-ratio').forEach(initRatio);
-    }
+        // Persist the default immediately so an untouched widget still saves a value.
+        if (!parseUnits(input.value)) {
+            writeValue();
+        }
+    };
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initAll);
-    } else {
-        initAll();
-    }
+    const scan = (node) => {
+        if (node.nodeType !== 1) {
+            return;
+        }
+        if (node.matches?.('.grid-ratio')) {
+            initWidget(node);
+        }
+        node.querySelectorAll?.('.grid-ratio').forEach(initWidget);
+    };
 
-    document.addEventListener('turbo:load', initAll);
-})();
+    // Observe <html> (not <body>): Contao's backend uses Turbo, which swaps the
+    // <body> on navigation/save. documentElement persists, so the widget keeps
+    // initialising after a save and when sub-palettes appear.
+    document.querySelectorAll('.grid-ratio').forEach(initWidget);
+    new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => mutation.addedNodes.forEach(scan));
+    }).observe(document.documentElement, { childList: true, subtree: true });
+}
