@@ -1,17 +1,35 @@
-{% extends '@Contao/content_element/_base.html.twig' %}
+{% extends '@Contao/content_element/element_group.html.twig' %}
 
-{#
-    Wraps the nested elements in a grid that follows the stored ratio.
-    Only fills the "content" block, so it composes cleanly: standalone it is the
-    grid itself; inside a host (e.g. KISS) it sits within the host's list wrapper.
-#}
-{% block content %}
-    {% set grid_cols = grid_ratio_cols(data.gridRatio|default) %}
-    {% if data.gridRatioActive|default and grid_cols %}
-        <div class="grid-ratio" style="--grid-cols: {{ grid_cols }}">
-            {% for fragment in nested_fragments %}{{ content_element(fragment) }}{% endfor %}
-        </div>
-    {% else %}
-        {% for fragment in nested_fragments %}{{ content_element(fragment) }}{% endfor %}
+{# Applies the stored ratio to the element group's own wrapper: adds the
+   "grid-ratio" class and the --grid-cols custom property to its attributes and
+   scopes the matching CSS into the document head. #}
+{% block attributes %}
+    {% set cols = grid_ratio_cols(data.gridRatio|default) %}
+    {% set active = data.gridRatioActive|default and cols %}
+    {% set attributes = attributes
+        .addClass('grid-ratio', active)
+        .addStyle('--grid-cols: ' ~ cols, active)
+    %}
+    {{ parent() }}
+{% endblock %}
+
+{% block style %}
+    {{ parent() }}
+    {% if data.gridRatioActive|default and grid_ratio_cols(data.gridRatio|default) %}
+        {% add 'grid-ratio' to head %}
+            <style>{{ block('grid_ratio_css') }}</style>
+        {% endadd %}
     {% endif %}
+{% endblock %}
+
+{# Override this block to change the breakpoint or grid behaviour. #}
+{% block grid_ratio_css %}
+@media (width >= 768px) {
+    .grid-ratio {
+        display: grid;
+        grid-template-columns: var(--grid-cols, 1fr);
+        gap: var(--grid-ratio-gap, 1rem);
+        align-items: var(--grid-ratio-align, stretch);
+    }
+}
 {% endblock %}

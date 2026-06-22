@@ -5,9 +5,8 @@ declare(strict_types=1);
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
 /*
- * Self-contained wiring so the widget works in ANY project by just installing
- * the bundle: a checkbox reveals the ratio field (sub-palette), and both are
- * added to the core "element_group" content element. Stored as real columns.
+ * A checkbox reveals the ratio field (sub-palette); both are added to the core
+ * "element_group" content element and stored as real columns.
  */
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gridRatioActive'] = [
@@ -27,8 +26,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gridRatio'] = [
 $GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][] = 'gridRatioActive';
 $GLOBALS['TL_DCA']['tl_content']['subpalettes']['gridRatioActive'] = 'gridRatio';
 
-// Add the toggle to the element group. addLegend is idempotent: if a "grid_legend"
-// already exists (e.g. provided by KISS) it is reused, otherwise it is created.
+// addLegend is idempotent: an existing "grid_legend" is reused, otherwise created.
 PaletteManipulator::create()
     ->addLegend('grid_legend', 'type_legend', PaletteManipulator::POSITION_AFTER)
     ->addField('gridRatioActive', 'grid_legend', PaletteManipulator::POSITION_APPEND)

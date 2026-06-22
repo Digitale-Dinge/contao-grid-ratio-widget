@@ -1,8 +1,15 @@
 services:
     _defaults:
-        autowire: true
         autoconfigure: true
 
-    DigitaleDinge\GridRatioWidgetBundle\:
-        resource: '../src/'
-        exclude: '../src/{DigitaleDingeGridRatioWidgetBundle.php,ContaoManager,Widget}'
+    digitale_dinge_grid_ratio_widget.listener.backend_assets:
+        class: DigitaleDinge\GridRatioWidgetBundle\EventListener\BackendAssetsListener
+        arguments:
+            - '@contao.routing.scope_matcher'
+            - '@assets.packages'
+
+    digitale_dinge_grid_ratio_widget.twig.extension:
+        class: DigitaleDinge\GridRatioWidgetBundle\Twig\GridRatioExtension
+
+    digitale_dinge_grid_ratio_widget.twig.runtime:
+        class: DigitaleDinge\GridRatioWidgetBundle\Twig\GridRatioRuntime

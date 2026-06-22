@@ -10,10 +10,10 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 /**
- * Loads the widget assets in the back end and the small grid CSS in the front end.
+ * Loads the back-end widget assets.
  */
 #[AsEventListener]
-readonly class AssetsListener
+readonly class BackendAssetsListener
 {
     private const PACKAGE = 'digitale_dinge_grid_ratio_widget';
 
@@ -25,15 +25,11 @@ readonly class AssetsListener
 
     public function __invoke(RequestEvent $event): void
     {
-        if ($this->scopeMatcher->isBackendMainRequest($event)) {
-            $GLOBALS['TL_CSS'][] = $this->package->getUrl('grid-ratio-widget.css', self::PACKAGE);
-            $GLOBALS['TL_JAVASCRIPT'][] = $this->package->getUrl('grid-ratio-widget.js', self::PACKAGE);
-
+        if (!$this->scopeMatcher->isBackendMainRequest($event)) {
             return;
         }
 
-        if ($this->scopeMatcher->isFrontendMainRequest($event)) {
-            $GLOBALS['TL_CSS'][] = $this->package->getUrl('grid-ratio-widget.frontend.css', self::PACKAGE);
-        }
+        $GLOBALS['TL_CSS'][] = $this->package->getUrl('grid-ratio-widget.css', self::PACKAGE);
+        $GLOBALS['TL_JAVASCRIPT'][] = $this->package->getUrl('grid-ratio-widget.js', self::PACKAGE);
     }
 }

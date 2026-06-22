@@ -16,13 +16,7 @@ class Plugin implements BundlePluginInterface
     {
         return [
             (new BundleConfig(DigitaleDingeGridRatioWidgetBundle::class))
-                // Load after the core and – if present – after KISS, so our DCA
-                // appends the "gridRatioActive" toggle behind the (KISS) column
-                // fields.
-                ->setLoadAfter([
-                    ContaoCoreBundle::class,
-                    'DigitaleDinge\\ContaoKiss\\DigitaleDingeContaoKissBundle',
-                ]),
+                ->setLoadAfter([ContaoCoreBundle::class]),
         ];
     }
 }
