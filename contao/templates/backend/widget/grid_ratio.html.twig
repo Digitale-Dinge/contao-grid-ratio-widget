@@ -13,10 +13,9 @@
     {% set ratio_count = max(2, min(4, ratio_count)) %}
 
     {% set columns_word = 'tl_content.gridRatioColumns'|trans({}, 'contao_tl_content') %}
-    <div class="grid-ratio__controls">
+
+    <div class="grid-ratio__field">
         <h3><label class="grid-ratio__count-label" for="{{ id }}_count">{{ columns_word }}</label></h3>
-        {# Same markup Contao uses for select fields, so the choices.js controller
-           styles it identically to the classic "Columns" dropdown. #}
         <div class="tl_select_wrapper" data-controller="contao--choices">
             <select class="tl_select grid-ratio__count" id="{{ id }}_count">
                 {% for n in 2..4 %}
@@ -24,7 +23,12 @@
                 {% endfor %}
             </select>
         </div>
+        <p class="tl_help tl_tip" data-contao--tooltips-target="tooltip">{{ 'tl_content.gridRatioColumnsHelp'|trans({}, 'contao_tl_content') }}</p>
     </div>
 
-    <div class="grid-ratio__bar" aria-hidden="true"></div>
+    <div class="grid-ratio__field">
+        <h3><label>{{ 'tl_content.gridRatioLabel'|trans({}, 'contao_tl_content') }}</label></h3>
+        <div class="grid-ratio__bar" aria-hidden="true"></div>
+        <p class="tl_help tl_tip" data-contao--tooltips-target="tooltip">{{ 'tl_content.gridRatioHelp'|trans({}, 'contao_tl_content') }}</p>
+    </div>
 </div>

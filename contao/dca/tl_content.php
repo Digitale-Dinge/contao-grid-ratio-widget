@@ -17,9 +17,10 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['gridRatioActive'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['gridRatio'] = [
+    'label' => ['', ''],
     'exclude' => true,
     'inputType' => 'gridRatio',
-    'eval' => ['tl_class' => 'w50 clr'],
+    'eval' => ['tl_class' => 'clr'],
     'sql' => ['type' => 'string', 'length' => 255, 'default' => ''],
 ];
 

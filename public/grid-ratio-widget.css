@@ -18,18 +18,25 @@ html[data-color-scheme=dark] {
 
 .grid-ratio {
     margin-top: 4px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px 30px;
+    align-items: start;
 }
 
-.grid-ratio__controls {
-    margin-bottom: 8px;
+@media (min-width: 768px) {
+    .grid-ratio {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
 }
 
-/* choices.js renders inside .tl_select_wrapper; keep it compact, not full width */
-.grid-ratio__controls .tl_select_wrapper {
-    max-width: 220px;
+.grid-ratio__field h3 {
+    margin-bottom: 6px;
 }
 
 .grid-ratio__bar {
+    box-sizing: border-box;
+    margin: 3px 0;
     position: relative;
     display: flex;
     align-items: stretch;
