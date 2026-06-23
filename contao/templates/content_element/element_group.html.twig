@@ -1,35 +1,34 @@
 {% extends '@Contao/content_element/element_group.html.twig' %}
+{% use '@Contao/grid/grid_ratio_attributes.html.twig' %}
 
-{# Applies the stored ratio to the element group's own wrapper: adds the
-   "grid-ratio" class and the --grid-cols custom property to its attributes and
-   scopes the matching CSS into the document head. #}
-{% block attributes %}
-    {% set cols = grid_ratio_cols(data.gridRatio|default) %}
-    {% set active = data.gridRatioActive|default and cols %}
-    {% set attributes = attributes
-        .addClass('grid-ratio', active)
-        .addStyle('--grid-cols: ' ~ cols, active)
-    %}
-    {{ parent() }}
+{# Can be overriden to skip injecting into attributes directly #}
+{% block grid_ratio_wrapper_attributes %}
+    {{- block('grid_ratio_attributes') -}}
 {% endblock %}
 
-{% block style %}
+{% block attributes %}
+    {% set attributes = attributes.mergeWith(block('grid_ratio_wrapper_attributes')) %}
     {{ parent() }}
-    {% if data.gridRatioActive|default and grid_ratio_cols(data.gridRatio|default) %}
-        {% add 'grid-ratio' to head %}
-            <style>{{ block('grid_ratio_css') }}</style>
-        {% endadd %}
-    {% endif %}
 {% endblock %}
 
 {# Override this block to change the breakpoint or grid behaviour. #}
 {% block grid_ratio_css %}
-@media (width >= 768px) {
-    .grid-ratio {
-        display: grid;
-        grid-template-columns: var(--grid-cols, 1fr);
-        gap: var(--grid-ratio-gap, 1rem);
-        align-items: var(--grid-ratio-align, stretch);
-    }
-}
+    {% set grid_ratio_active = data.gridRatioActive|default %}
+    {% if grid_ratio_active %}
+        {% add 'grid-ratio' to head %}
+            <style>
+                @media (width >= 768px) {
+                    .grid-ratio {
+                        display: grid;
+                        grid-template-columns: var(--grid-cols, 1fr);
+                    }
+                }
+            </style>
+        {% endadd %}
+    {% endif %}
+{% endblock %}
+
+{% block style %}
+    {{ parent() }}
+    {{- block('grid_ratio_css') -}}
 {% endblock %}

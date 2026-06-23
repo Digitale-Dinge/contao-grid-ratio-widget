@@ -1,0 +1,9 @@
+{# Scoped attributes for usage within other extensions #}
+{% block grid_ratio_attributes %}
+    {%- set grid_ratio_active = data.gridRatioActive|default(false) -%}
+    {%- set cols = grid_ratio_cols(data.gridRatio|default) -%}
+    {{- attrs(grid_cols_attributes|default)
+        .addClass('grid-ratio', grid_ratio_active)
+        .addStyle('--grid-cols: ' ~ cols, grid_ratio_active)
+    -}}
+{% endblock %}
