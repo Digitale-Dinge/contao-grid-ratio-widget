@@ -16,7 +16,7 @@ html[data-color-scheme=dark] {
     --grid-ratio-handle-bg: rgba(0, 0, 0, .7);
 }
 
-.grid-ratio {
+.widget .grid-ratio {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 16px 30px;
@@ -24,7 +24,7 @@ html[data-color-scheme=dark] {
 }
 
 @media (min-width: 768px) {
-    .grid-ratio {
+    .widget .grid-ratio {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 }
