@@ -1,0 +1,8 @@
+MSC:
+    gridRatioActive:
+        - Advanced column set
+        - Enables a custom column ratio for this group.
+    gridRatioColumns: Columns
+    gridRatioColumnsHelp: Defines how many items should be shown over the respective breakpoints.
+    gridRatioLabel: Column ratio
+    gridRatioHelp: Set the number of columns and their width ratio (as fr values).

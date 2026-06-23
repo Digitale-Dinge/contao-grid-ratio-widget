@@ -1,8 +1,0 @@
-tl_content:
-    gridRatioActive:
-        - Erweitertes Spaltenset
-        - Aktiviert ein individuelles Spalten-Verhältnis für diese Gruppe.
-    gridRatioColumns: Spalten
-    gridRatioColumnsHelp: Legt fest, wie viele Elemente an den jeweiligen Brechpunkten angezeigt werden sollen.
-    gridRatioLabel: Spalten-Verhältnis
-    gridRatioHelp: Spaltenanzahl und Breitenverhältnis (als fr-Werte) festlegen.

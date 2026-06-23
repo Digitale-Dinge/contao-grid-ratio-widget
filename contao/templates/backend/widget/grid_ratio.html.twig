@@ -1,3 +1,5 @@
+{% trans_default_domain 'contao_default' %}
+
 <div class="grid-ratio">
     {% set input_attributes = attrs()
         .set('type', 'hidden')
@@ -12,7 +14,7 @@
     {% set ratio_count = value|trim ? value|trim|split(' ')|length : 2 %}
     {% set ratio_count = max(2, min(4, ratio_count)) %}
 
-    {% set columns_word = 'tl_content.gridRatioColumns'|trans({}, 'contao_tl_content') %}
+    {% set columns_word = 'MSC.gridRatioColumns'|trans %}
 
     <div class="grid-ratio__field">
         <h3><label class="grid-ratio__count-label" for="{{ id }}_count">{{ columns_word }}</label></h3>
@@ -23,12 +25,12 @@
                 {% endfor %}
             </select>
         </div>
-        <p class="tl_help tl_tip" data-contao--tooltips-target="tooltip">{{ 'tl_content.gridRatioColumnsHelp'|trans({}, 'contao_tl_content') }}</p>
+        <p class="tl_help tl_tip" data-contao--tooltips-target="tooltip">{{ 'MSC.gridRatioColumnsHelp'|trans }}</p>
     </div>
 
     <div class="grid-ratio__field">
-        <h3><label>{{ 'tl_content.gridRatioLabel'|trans({}, 'contao_tl_content') }}</label></h3>
+        <h3><label>{{ 'MSC.gridRatioLabel'|trans }}</label></h3>
         <div class="grid-ratio__bar" aria-hidden="true"></div>
-        <p class="tl_help tl_tip" data-contao--tooltips-target="tooltip">{{ 'tl_content.gridRatioHelp'|trans({}, 'contao_tl_content') }}</p>
+        <p class="tl_help tl_tip" data-contao--tooltips-target="tooltip">{{ 'MSC.gridRatioHelp'|trans }}</p>
     </div>
 </div>
