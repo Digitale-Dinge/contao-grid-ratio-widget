@@ -1,0 +1,6 @@
+tl_content:
+    grid_legend:                Grid settings
+
+    gridRatioActive:
+        - Advanced column set
+        - Enables a custom column ratio for this group.

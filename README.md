@@ -12,9 +12,8 @@ The editor sets a column count (2–4) and drags a ruler to split the width; the
 value is stored as a ready-to-use `fr` list (e.g. `4fr 8fr`) and rendered as the
 inline custom property `--grid-cols` on the group wrapper.
 
-The widget is **framework-independent** (no Tailwind) and **self-contained**:
-just installing the bundle adds the field to the core `element_group` content
-element and ships the matching frontend grid CSS.
+The widget is **framework-independent** (e.g. no Tailwind) and **self-contained**:
+Installing the bundle adds the field to the `element_group` content element and ships the matching frontend grid CSS.
 
 ## How it works
 
@@ -27,24 +26,49 @@ element and ships the matching frontend grid CSS.
 
 ## Installation
 
-```
+```bash
 composer require digitaledinge/contao-grid-ratio-widget
 ```
 
-After installing, run the database update (the bundle adds the `gridRatio` and
-`gridRatioActive` columns to `tl_content`). Nothing else is required.
+## Customization
 
-## Using it on a custom field / wrapper
+The grid-ratio behavior is split into overridable Twig blocks, so you can switch parts off or reuse them elsewhere.
 
-To apply a stored value to your own element, add the inline style with the
-shipped Twig function and reuse the `--grid-cols` variable in your CSS:
+### Resets
 
 ```twig
-{% set attributes = attributes.addStyle('--grid-cols: ' ~ grid_ratio_cols(data.gridRatio|default)) %}
+{# @Contao/content_element/element_group.html.twig #}
+
+{% extends '@Contao/content_element/element_group.html.twig' %}
+
+{# Reset the grid_ratio_attributes as they are embedded within _content_wrapper #}
+{% block grid_ratio_wrapper_attributes %}{% endblock %}
+
+{# Removing the styles within head #}
+{% block grid_ratio_css %}{% endblock %}
 ```
 
-```css
-@media (width >= 768px) {
-    .your-wrapper { grid-template-columns: var(--grid-cols); }
-}
+### Using within your template
+
+To apply a stored value to your own element, add the attributes that will inject the `--grid-cols` variable in your CSS:
+
+
+```twig
+{% extends '@Contao/content_element/_base.html.twig' %}
+{% use '@Contao/grid/grid_ratio_attributes.html.twig' %}
+
+{# Adding attributes #}
+{% set own_attributes = attrs().mergeWith(block('grid_ratio_attributes')) %}
+
+{# Adding styles #}
+{% add 'grid-ratio' to head %}
+    <style>
+        @media (width >= 768px) {
+            .grid-ratio {
+                display: grid;
+                grid-template-columns: var(--grid-cols, 1fr);
+            }
+        }
+    </style>
+{% endadd %}
 ```

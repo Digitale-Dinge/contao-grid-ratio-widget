@@ -1,0 +1,6 @@
+tl_content:
+    grid_legend:                Grid-Einstellungen
+
+    gridRatioActive:
+        - Erweitertes Spaltenset
+        - Aktiviert ein individuelles Spalten-Verhältnis für diese Gruppe.
